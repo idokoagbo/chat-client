@@ -1,19 +1,6 @@
 import React, { useState } from "react";
 import io from "socket.io-client";
-
-// const socket = io("http://localhost:8000");
-
-// socket.on('connect', () => {
-//     console.log("connected to server");
-// });
-
-// socket.on('message', (message) => {
-//     console.log("received message from server", message);
-// });
-
-// socket.disconnect('disconnect', () => {
-//     console.log("disconnected from server");
-// });
+import ChatScreen from "../components/chatScreen";
 
 
 const ChatApp = () => {
@@ -44,18 +31,38 @@ const ChatApp = () => {
     return (
         <div>
             <h1>Chat App</h1>
-            <ul>
-                {messages.map((message, index) => (
-                    <li key={index}>{message}</li>
-                ))}
-            </ul>
+            <ChatScreen messages={messages} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     value={input}
+                    placeholder="write something..."
+                    style={{
+                        width: "87%",
+                        padding: "10px",
+                        fontSize: "16px",
+                        marginLeft: "5px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+
+                    }}
                     onChange={(event) => setInput(event.target.value)}
                 />
-                <button type="submit">Send</button>
+                <button type="submit"
+
+                    style={{
+                        width: "10%",
+                        padding: "10px",
+                        fontSize: "16px",
+                        float: "right",
+                        marginRight: "5px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        backgroundColor: "blue",
+                        color: "white",
+                        cursor: "pointer"
+                    }}
+                >Send</button>
             </form>
         </div>
     );
