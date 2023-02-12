@@ -14,7 +14,9 @@ const ChatApp = () => {
     });
 
     socket.on("message", (message) => {
-        console.log("received message from server", message);
+        if (message.search('User:') !== -1) {
+            return;
+        }
         setMessages([...messages, message]);
     });
 
@@ -23,14 +25,14 @@ const ChatApp = () => {
         event.preventDefault();
         setMessages([...messages, `Me: ${input}`]);
         setTimeout(() => {
-            socket.emit("message", input);
+            socket.emit("message", `User: ${input}`);
         }, 1000);
         setInput("");
     };
 
     return (
         <div>
-            <h1>Chat App</h1>
+            <h1>Chat Client</h1>
             <ChatScreen messages={messages} />
             <form onSubmit={handleSubmit}>
                 <input
