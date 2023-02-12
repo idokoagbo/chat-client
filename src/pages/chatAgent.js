@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import ChatScreen from "../components/chatScreen";
 
 
 const ChatAgentPage = () => {
+    const [responses, setResponses] = useState([]);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+
+    // load sample response from server
+    useEffect(() => {
+        fetch('http://localhost:8000/responses')
+            .then(response => response.json())
+            .then(data => {
+                setResponses(data);
+            });
+    }, []);
 
     const socket = io("http://localhost:8000");
 
@@ -15,15 +25,19 @@ const ChatAgentPage = () => {
 
     socket.on("message", (message) => {
         console.log("received message from server", message);
-        setMessages([...messages, message]);
+        if (message.search('Agent:') !== -1) {
+            return;
+        }
+        setTimeout(() => {
+            setMessages([...messages, message]);
+        }, 1000);
     });
-
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setMessages([...messages, `Me: ${input}`]);
         setTimeout(() => {
-            socket.emit("message", input);
+            socket.emit("message", `Agent: ${input}`);
         }, 1000);
         setInput("");
     };
@@ -80,14 +94,20 @@ const ChatAgentPage = () => {
             }>
                 <h2>Sample Responses</h2>
                 <ul>
-                    <li>Hi, how can I help you?</li>
-                    <li>Hi, I have a problem with my account</li>
-                    <li>What is the problem?</li>
-                    <li>My account is not working</li>
-                    <li>Can you please tell me your account number?</li>
-                    <li>My account number is 123456789</li>
-                    <li>Thank you, I will check your account</li>
-                    <li>Ok, thank you</li>
+                    {
+                        responses.map((response, index) => {
+                            return (
+                                <li key={response._id}><a href="" onClick={(event) => {
+                                    event.preventDefault();
+                                    setMessages([...messages, `Me: ${response.response}`]);
+                                    setTimeout(() => {
+                                        socket.emit("message", `Agent: ${response.response}`);
+                                    }, 1000);
+                                }}>{response.response}</a></li>
+                            );
+                        }
+                        )
+                    }
                 </ul>
             </div>
         </div>
