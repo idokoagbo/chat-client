@@ -15,7 +15,35 @@ function LoginPage() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(`Username: ${username} Password: ${password}`);
+
+    // submit to backend
+    fetch('http://localhost:8000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+
+
+
+        if (data.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          window.location.href = '/chatAgent';
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+        alert(error);
+      });
+
+
   }
 
   return (
